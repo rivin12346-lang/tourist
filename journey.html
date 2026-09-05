@@ -1,0 +1,332 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journeys | Explore Ithihaas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="cinematic.css">
+    <style>
+        /* Page-specific: Journey panels with image left/right alternating */
+        .journey-cin-section { background: var(--dark); padding: 0; }
+        .journey-cin-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 90vh;
+            overflow: hidden;
+        }
+        .journey-cin-row.reverse { direction: rtl; }
+        .journey-cin-row.reverse > * { direction: ltr; }
+        .journey-cin-img-col {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+        .journey-cin-img-col img {
+            width: 450px;
+            height: 450px;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.7), 0 0 0 4px rgba(212,168,64,0.3);
+            transition: transform 0.5s ease;
+        }
+        .journey-cin-row:hover .journey-cin-img-col img {
+            transform: scale(1.05);
+        }
+        
+        .journey-cin-content-col {
+            display: flex;
+            align-items: center;
+            padding: 80px 72px;
+            background: var(--dark-2);
+            border-top: 1px solid rgba(201,168,76,0.07);
+        }
+        .journey-cin-inner {}
+        .journey-cin-num {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            font-weight: 700;
+            color: rgba(201,168,76,0.08);
+            line-height: 1;
+            margin-bottom: -16px;
+        }
+        .journey-cin-tag {
+            display: inline-block;
+            font-family: var(--font-ui);
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 16px;
+            border: 1px solid rgba(201,168,76,0.25);
+            padding: 5px 12px;
+            border-radius: 1px;
+        }
+        .journey-cin-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 3.5vw, 3.2rem);
+            font-weight: 300;
+            color: var(--text); font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 12px;
+        }
+        .journey-cin-location {
+            font-family: var(--font-ui);
+            font-size: 0.72rem;
+            letter-spacing: 0.15em;
+            color: var(--gold);
+            margin-bottom: 24px;
+        }
+        .journey-cin-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted); font-weight: 500;
+            line-height: 1.95;
+            
+            margin-bottom: 36px;
+        }
+        .journey-cin-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-ui);
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--dark);
+            background: var(--gold);
+            padding: 13px 28px;
+            text-decoration: none;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+        .journey-cin-btn:hover { background: var(--gold-light); transform: translateY(-2px); }
+        @media (max-width: 900px) {
+            .journey-cin-row { grid-template-columns: 1fr; min-height: auto; }
+            .journey-cin-row.reverse { direction: ltr; }
+            .journey-cin-img-col {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+            .journey-cin-content-col { padding: 48px 32px; }
+        }
+    </style>
+</head>
+<body class="cinematic-body">
+
+    <nav class="cin-nav scrolled" id="cin-nav">
+        <div class="cin-nav-inner">
+            <a href="index.html" class="cin-logo"><img src="images/logo_transparent.png" alt="Explore Itihaas" class="logo-img"></a>
+            <ul class="cin-nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="journey.html">Journeys</a></li>
+                <li><a href="why-us.html">Why Us</a></li>
+                <li><a href="testimonial.html">Testimonials</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+            </ul>
+            <div class="cin-nav-right">
+                <a href="book-now.html" class="cin-book-btn">Book Now</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Hero -->
+    <section class="cin-hero" style="height:60vh;">
+        <div class="cin-hero-bg">
+            <img src="images/galleryk.jpeg" alt="Journeys" class="cin-hero-img" style="transform:scale(1.1);">
+            <div class="cin-hero-overlay"></div>
+        </div>
+        <div class="cin-hero-content" style="opacity:1;transform:none;">
+            <div class="cin-hero-tag" style="opacity:1;transform:none;">Heritage � Dynasty � Discovery</div>
+            <h1 class="cin-hero-title">
+                <span class="line1" style="opacity:1;transform:none;">Our Journeys</span>
+                <span class="line2" style="opacity:1;transform:none;font-size:clamp(1.2rem,2.5vw,2rem);font-weight:300;color:rgba(212,197,169,0.7);">Enter a dynasty. Experience the world it created.</span>
+            </h1>
+        </div>
+    </section>
+
+    <!-- Journeys -->
+    <section class="journey-cin-section">
+
+        <div class="journey-cin-row" id="j1">
+            <div class="journey-cin-img-col">
+                <img src="images/kishkinda.png" alt="Kishkinda">
+            </div>
+            <div class="journey-cin-content-col">
+                <div class="journey-cin-inner">
+                    <div class="journey-cin-num">01</div>
+                    <span class="journey-cin-tag">Ramayana &amp; Vijayanagara</span>
+                    <h2 class="journey-cin-title">Kishkinda Kanda</h2>
+                    <div class="journey-cin-location">?? Hampi and the landscapes of Kishkinda</div>
+                    <p class="journey-cin-desc">Walk through the very land where Rama met Hanuman. Explore the boulder-strewn landscape of Kishkinda as described in the Ramayana, and witness the magnificent ruins of the Vijayanagara Empire in Hampi.</p>
+                    <a href="book-now.html" class="journey-cin-btn">Book This Journey ?</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="journey-cin-row reverse" id="j2">
+            <div class="journey-cin-img-col">
+                <img src="images/kannagi.png" alt="Kannagi">
+            </div>
+            <div class="journey-cin-content-col">
+                <div class="journey-cin-inner">
+                    <div class="journey-cin-num">02</div>
+                    <span class="journey-cin-tag">Silappadikaram � Chera � Chola � Pandya</span>
+                    <h2 class="journey-cin-title">Kannagi's Path to Justice</h2>
+                    <div class="journey-cin-location">?? Poompuhar � Kumbakonam � Trichy � Madurai</div>
+                    <p class="journey-cin-desc">Follow the trail of Kannagi, the immortal heroine of Silappadikaram. Journey through ancient port cities, sacred river towns and the great temple cities of the three Tamil kingdoms � Chera, Chola and Pandya.</p>
+                    <a href="book-now.html" class="journey-cin-btn">Book This Journey ?</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="journey-cin-row" id="j3">
+            <div class="journey-cin-img-col">
+                <img src="images/chola_chronicles.png" alt="Chola Chronicles">
+            </div>
+            <div class="journey-cin-content-col">
+                <div class="journey-cin-inner">
+                    <div class="journey-cin-num">03</div>
+                    <span class="journey-cin-tag">Power � Bhakti � Bronze � Kaveri</span>
+                    <h2 class="journey-cin-title">Chola Chronicles</h2>
+                    <div class="journey-cin-location">?? Thanjavur � Kumbakonam</div>
+                    <p class="journey-cin-desc">Step into the world of the greatest empire of medieval South India. From the colossal Brihadeeswara Temple to exquisite Chola bronzes and the sacred banks of the Kaveri � this is a journey into power, devotion and beauty.</p>
+                    <a href="book-now.html" class="journey-cin-btn">Book This Journey ?</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="journey-cin-row reverse" id="j4">
+            <div class="journey-cin-img-col">
+                <img src="images/chalukyas.png" alt="Chalukyas">
+            </div>
+            <div class="journey-cin-content-col">
+                <div class="journey-cin-inner">
+                    <div class="journey-cin-num">04</div>
+                    <span class="journey-cin-tag">Experimentation � Faith � Temple Architecture</span>
+                    <h2 class="journey-cin-title">Charm of the Chalukyas</h2>
+                    <div class="journey-cin-location">?? Badami � Aihole � Pattadakal</div>
+                    <p class="journey-cin-desc">Witness the birth of Deccan temple architecture. The Chalukyas of Badami were bold experimenters � their cave temples, rock-cut shrines and structural temples laid the foundation for all that followed in South Indian temple art.</p>
+                    <a href="book-now.html" class="journey-cin-btn">Book This Journey ?</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="journey-cin-row" id="j5">
+            <div class="journey-cin-img-col">
+                <img src="images/hoysala.png" alt="Hoysala">
+            </div>
+            <div class="journey-cin-content-col">
+                <div class="journey-cin-inner">
+                    <div class="journey-cin-num">05</div>
+                    <span class="journey-cin-tag">Devotion Sculpted in Stone</span>
+                    <h2 class="journey-cin-title">Stone Poets of Hoysala</h2>
+                    <div class="journey-cin-location">?? Belur � Halebidu � Somanathapura � Talakad</div>
+                    <p class="journey-cin-desc">Marvel at some of the most intricate stone carvings ever produced by human hands. Hoysala temples are poetry in stone � every inch carved with celestial beings, epic narratives and devotional imagery of breathtaking detail.</p>
+                    <a href="book-now.html" class="journey-cin-btn">Book This Journey ?</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="journey-cin-row reverse" id="j6">
+            <div class="journey-cin-img-col">
+                <img src="images/pandya.png" alt="Pandya Chronicles">
+            </div>
+            <div class="journey-cin-content-col">
+                <div class="journey-cin-inner">
+                    <div class="journey-cin-num">06</div>
+                    <span class="journey-cin-tag">Madurai � Trade � Faith � Antiquity</span>
+                    <h2 class="journey-cin-title">Pandya Chronicles</h2>
+                    <div class="journey-cin-location">?? Madurai � Tenkasi � Keezhadi � Adichanallur</div>
+                    <p class="journey-cin-desc">Journey into one of the oldest continuously inhabited regions of the world. From the recent Keezhadi excavations revealing Iron Age Tamil urban life, to the towering Meenakshi temple of Madurai � the Pandya story is ancient, layered and alive.</p>
+                    <a href="book-now.html" class="journey-cin-btn">Book This Journey ?</a>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <footer class="cin-footer">
+        <div class="cin-footer-inner">
+            <div class="cin-footer-brand"><h3>Explore Ithihaas</h3><p>Experience Bharat through a completely different lens.</p></div>
+            <div class="cin-footer-links">
+                <a href="index.html">Home</a><a href="journey.html">Journeys</a>
+                <a href="gallery.html">Gallery</a><a href="why-us.html">Why Us</a>
+                <a href="testimonial.html">Testimonials</a><a href="book-now.html">Book Now</a>
+            </div>
+            <div class="cin-footer-copy"><p>&copy; 2026 Explore Ithihaas. All rights reserved.</p></div>
+        </div>
+    </footer>
+
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <script src="backend/backend.js"></script>
+        <script>
+        gsap.registerPlugin(ScrollTrigger);
+        window.addEventListener("scroll", () => {
+            document.getElementById("cin-nav").classList[window.scrollY > 60 ? "add" : "remove"]("scrolled");
+        });
+        
+        // 3D PUZZLE JOIN EFFECT for Journey items
+        document.querySelectorAll(".journey-cin-row").forEach((row, i) => {
+            // Give row 3D perspective
+            row.style.perspective = "1200px";
+            
+            const content = row.querySelector(".journey-cin-inner");
+            const img = row.querySelector(".journey-cin-img-col img");
+            
+            // The content block flies in from one side, rotating into place like a puzzle piece
+            gsap.from(content, {
+                x: i % 2 === 0 ? -300 : 300,
+                z: -400,
+                rotationY: i % 2 === 0 ? 45 : -45,
+                rotationX: 20,
+                opacity: 0,
+                duration: 1.6,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: row,
+                    start: "top 75%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+            
+            // The image flies in from the opposite side, rotating into place
+            gsap.from(img, {
+                x: i % 2 === 0 ? 300 : -300,
+                z: 400,
+                rotationY: i % 2 === 0 ? -45 : 45,
+                rotationX: -20,
+                scale: 0.7,
+                opacity: 0,
+                duration: 1.6,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: row,
+                    start: "top 75%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

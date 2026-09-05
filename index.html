@@ -1,0 +1,383 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Ithihaas | Temple Journey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+        <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        html.locked{overflow:hidden;}
+        body{background:#F5EBE1;color:#2C1A12;font-family:'Outfit',sans-serif;overflow-x:hidden;}
+
+        /* NAV */
+        nav{position:fixed;top:0;left:0;width:100%;z-index:2000;display:flex;justify-content:space-between;align-items:center;padding:12px 48px;background:rgba(250,248,245,0.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(184,134,11,0.2);opacity:0;pointer-events:none;transition:opacity 0.6s;}
+        nav.show{opacity:1;pointer-events:all;}
+        nav img{height:52px;width:auto;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2));}
+        .nav-links{display:flex;gap:28px;list-style:none;}
+        .nav-links a{font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(44,26,18,0.7);text-decoration:none;transition:color 0.3s;}
+        .nav-links a:hover{color:#B8860B;}
+        .nav-book{font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;background:#B8860B;color:#FFF;padding:10px 22px;text-decoration:none;border-radius:2px;font-weight:500;}
+        .nav-book:hover{background:#D4AF37;}
+
+        /* ═══ GATE OVERLAY ═══ */
+        #gate-overlay{
+            position:fixed;inset:0;z-index:1500;
+            display:flex;align-items:center;justify-content:center;
+            background:#F5EBE1;cursor:pointer;
+        }
+        .gate-container{position:relative;width:100vw;height:100vh;perspective:1200px;overflow:hidden;}
+        .gate-door{position:absolute;top:0;width:50%;height:100%;overflow:hidden;will-change:transform;}
+        .gate-door.left{left:0;transform-origin:left center;}
+        .gate-door.right{right:0;transform-origin:right center;}
+        .gate-door img{position:absolute;top:50%;height:100vh;width:auto;min-width:100%;object-fit:cover;filter:saturate(1.1) brightness(1.1);transform:translateY(-50%);}
+        .gate-door.left img{right:0;object-position:right center;}
+        .gate-door.right img{left:0;object-position:left center;}
+        .gate-seam{position:absolute;top:0;bottom:0;left:50%;width:3px;transform:translateX(-50%);z-index:5;background:linear-gradient(to bottom,transparent 3%,rgba(212,168,64,0.9) 25%,rgba(255,220,80,1) 50%,rgba(212,168,64,0.9) 75%,transparent 97%);box-shadow:0 0 25px rgba(212,168,64,0.5),0 0 80px rgba(212,168,64,0.2);animation:seamGlow 2s ease-in-out infinite;}
+        @keyframes seamGlow{0%,100%{opacity:0.6;box-shadow:0 0 15px rgba(212,168,64,0.3);}50%{opacity:1;box-shadow:0 0 40px rgba(212,168,64,0.7),0 0 100px rgba(212,168,64,0.3);}}
+        .gate-light{position:absolute;inset:0;z-index:1;background:radial-gradient(circle,rgba(255,255,255,0.9) 0%,rgba(255,248,220,0.6) 35%,transparent 65%);opacity:0;}
+        .gate-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;text-align:center;width:min(520px,65vw);}
+        .gate-text img{max-height:150px;margin-bottom:16px;filter:drop-shadow(0 0 30px rgba(255,255,255,0.6)) drop-shadow(0 4px 15px rgba(0,0,0,0.2));}
+        .gate-text h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,3rem);font-weight:400;color:#1A0F0A;line-height:1.2;margin-bottom:14px;text-shadow:0 1px 0 rgba(255,255,255,0.8),0 2px 4px rgba(0,0,0,0.2);}
+        .gate-text .prompt{font-size:0.7rem;letter-spacing:0.4em;text-transform:uppercase;color:#B8860B;animation:pulse 2.5s ease-in-out infinite;}
+        .gate-text .prompt-icon{font-size:2.2rem;margin-bottom:10px;display:block;animation:pulse 2.5s ease-in-out infinite;}
+        @keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.06);}}
+
+        /* Gate particles */
+        #gate-particles{position:absolute;inset:0;z-index:0;pointer-events:none;}
+
+        /* ═══ VIEWPORT ═══ */
+        #viewport{position:fixed;inset:0;perspective:1200px;overflow:hidden;}
+        #camera{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform;}
+        .scene{position:absolute;inset:0;transform-style:preserve-3d;display:flex;align-items:center;justify-content:center;}
+
+        /* Hero */
+        .hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,250,240,0.9) 0%,transparent 65%),radial-gradient(ellipse at 50% 100%,rgba(240,230,215,0.8) 0%,transparent 60%),radial-gradient(ellipse at 50% 50%,rgba(255,255,255,0.8) 0%,#F5EBE1 75%);}
+        .hero-text{position:relative;z-index:10;text-align:center;width:min(620px,55vw);transform:translateZ(200px);}
+        .hero-text img.logo{max-height:155px;width:auto;margin-bottom:16px;filter:drop-shadow(0 0 30px rgba(255,255,255,0.6)) drop-shadow(0 4px 15px rgba(0,0,0,0.2));}
+        .hero-tag{font-size:0.6rem;letter-spacing:0.5em;text-transform:uppercase;color:#B8860B;margin-bottom:14px;display:block;}
+        .hero-text h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,4.5vw,3.8rem);font-weight:400;color:#1A0F0A;line-height:1.15;margin-bottom:16px;text-shadow:0 1px 0 rgba(255,255,255,0.8),0 3px 6px rgba(0,0,0,0.1);}
+        .hero-text p{font-size:0.92rem;color:rgba(44,26,18,0.8);font-style:italic;line-height:1.85;margin-bottom:24px;}
+        .gold-divider{display:flex;align-items:center;gap:14px;justify-content:center;margin-bottom:24px;}
+        .gold-divider::before,.gold-divider::after{content:'';flex:1;max-width:80px;height:1px;background:linear-gradient(to right,transparent,#B8860B,transparent);}
+        .gold-divider span{font-size:0.56rem;letter-spacing:0.4em;text-transform:uppercase;color:#B8860B;white-space:nowrap;}
+        .hero-cta{display:inline-block;font-size:0.7rem;letter-spacing:0.22em;text-transform:uppercase;color:#FFF;background:#B8860B;padding:13px 34px;text-decoration:none;border-radius:2px;font-weight:500;box-shadow:0 8px 25px rgba(0,0,0,0.15),0 0 20px rgba(212,168,64,0.2);transition:all 0.35s;}
+        .hero-cta:hover{background:#D4AF37;transform:translateY(-3px);}
+
+        /* Particles layer */
+        #hero-particles{position:absolute;inset:0;z-index:1;pointer-events:none;}
+        .particle{position:absolute;border-radius:50%;background:#B8860B;box-shadow:0 0 6px 1px rgba(212,168,64,0.3);opacity:0;animation:floatP linear infinite;}
+        @keyframes floatP{0%{transform:translateY(100vh) scale(0);opacity:0;}15%{opacity:0.6;}85%{opacity:0.3;}100%{transform:translateY(-5vh) scale(0.4);opacity:0;}}
+
+        /* ═══ TIME TUNNEL ELEMENTS ═══ */
+        .time-ring{position:absolute;top:50%;left:50%;border:2px solid rgba(184,134,11,0.12);border-radius:50%;box-shadow:0 0 40px rgba(184,134,11,0.08),inset 0 0 40px rgba(184,134,11,0.04);}
+        .warp-streak{position:absolute;top:50%;left:50%;width:2px;background:linear-gradient(to bottom,transparent,rgba(184,134,11,0.4),transparent);}
+
+        /* Travel badge */
+        .travel-badge{position:absolute;top:8%;left:50%;transform:translateX(-50%) translateZ(420px);z-index:15;display:flex;align-items:center;gap:12px;padding:10px 28px;background:rgba(250,248,245,0.92);backdrop-filter:blur(12px);border:1px solid rgba(184,134,11,0.25);border-radius:30px;font-size:0.58rem;letter-spacing:0.3em;text-transform:uppercase;color:#B8860B;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
+        .travel-badge .icon{font-size:1.3rem;}
+
+        /* Destination frames */
+        .frame{position:relative;width:74vw;height:70vh;max-width:1080px;border-radius:4px;box-shadow:0 25px 60px rgba(0,0,0,0.2),0 0 0 1px rgba(184,134,11,0.15);background:#FAF8F5;transform-style:preserve-3d;overflow:hidden;}
+        .frame img{width:100%;height:100%;object-fit:cover;border-radius:4px;}
+        .text-content{position:absolute;bottom:0;left:0;right:0;transform:translateZ(400px);background:linear-gradient(to top,rgba(250,248,245,0.98) 0%,rgba(250,248,245,0.85) 65%,transparent 100%);padding:55px 44px 34px;}
+        .tag{font-size:0.58rem;letter-spacing:0.42em;text-transform:uppercase;color:#B8860B;margin-bottom:8px;display:block;}
+        h2{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3vw,2.8rem);font-weight:400;color:#1A0F0A;line-height:1.15;margin-bottom:10px;}
+        .dest-p{font-size:0.88rem;color:rgba(44,26,18,0.8);line-height:1.85;font-style:italic;margin-bottom:16px;max-width:500px;}
+        .explore-btn{display:inline-block;font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:#FFF;background:#B8860B;padding:10px 24px;text-decoration:none;border-radius:2px;font-weight:500;transition:all 0.3s;}
+        .explore-btn:hover{background:#D4AF37;transform:translateY(-2px);}
+
+        /* End */
+        .end-screen{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;text-align:center;transform:translateZ(200px);}
+        .end-screen h1{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,4.5vw,4rem);font-weight:400;color:#1A0F0A;margin-bottom:22px;}
+
+        @media(max-width:768px){
+            .nav-links{display:none;}
+            .hero-text{width:78vw;}
+            .hero-text h1{font-size:1.8rem;}
+            .travel-badge{font-size:0.5rem;padding:8px 16px;}
+            .gate-text{width:85vw;}
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══ GATE OVERLAY ═══ -->
+<div id="gate-overlay">
+    <div class="gate-container">
+        <div class="gate-light" id="gateLight"></div>
+        <div id="gate-particles"></div>
+        <div class="gate-door left" id="doorL"><img src="images/gate_left.png" alt="Left Gate"></div>
+        <div class="gate-seam" id="gateSeam"></div>
+        <div class="gate-door right" id="doorR"><img src="images/gate_right.png" alt="Right Gate"></div>
+        <div class="gate-text" id="gateText">
+            <img src="images/logo_transparent.png" alt="Ithihaas">
+            <h1>Enter the Temple<br>of Time</h1>
+            <div class="prompt-icon">🙏</div>
+            <p class="prompt">Touch to Enter</p>
+        </div>
+    </div>
+</div>
+
+<!-- NAV -->
+<nav id="mainNav">
+    <a href="index.html"><img src="images/logo_transparent.png" alt="Explore Ithihaas"></a>
+    <ul class="nav-links">
+        <li><a href="journey.html">Journeys</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="why-us.html">Why Us</a></li>
+        <li><a href="testimonial.html">Testimonials</a></li>
+    </ul>
+    <a href="book-now.html" class="nav-book">Book Now</a>
+</nav>
+
+<!-- 3D VIEWPORT -->
+<div id="viewport">
+  <div id="camera">
+
+    <!-- SCENE 0: HERO -->
+    <div class="scene" style="transform:translateZ(0px);">
+        <div class="hero-bg"></div>
+        <div id="hero-particles"></div>
+        <div class="hero-text" id="heroText">
+            <img class="logo" src="images/logo_transparent.png" alt="Explore Ithihaas">
+            <span class="hero-tag">Story Driven Heritage Tours</span>
+            <h1>Journey Through<br>Timeless Temples</h1>
+            <p>Experience the history, architecture and spirituality<br>of India's greatest civilisations</p>
+            <div class="gold-divider"><span>Discover · Explore · Experience</span></div>
+            <a href="journey.html" class="hero-cta">Begin Your Journey</a>
+        </div>
+        
+    </div>
+
+    <!-- TUNNEL ZONE (fills gaps with rings + streaks) -->
+    <div class="scene" style="transform:translateZ(-2000px);" id="tunnelZone"></div>
+
+    <!-- DEST 1: By Train -->
+    <div class="scene" style="transform:translateZ(-4500px);">
+        <div class="travel-badge"><span class="icon">🚂</span> Travelling by Heritage Train</div>
+        <div class="frame"><img src="images/hampi_landscape.jpg" alt="Hampi">
+            <div class="text-content">
+                <span class="tag">Destination 01</span>
+                <h2>Kishkinda Kanda</h2>
+                <p class="dest-p">Walk through the very land where Rama met Hanuman. The boulder-strewn landscape of ancient Kishkinda.</p>
+                <a href="journey.html" class="explore-btn">Enter Location</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEST 2: By Flight -->
+    <div class="scene" style="transform:translateZ(-8000px);">
+        <div class="travel-badge"><span class="icon">✈️</span> Travelling by Flight</div>
+        <div class="frame"><img src="images/gallerykg2.jpeg" alt="Kannagi">
+            <div class="text-content">
+                <span class="tag">Destination 02</span>
+                <h2>Kannagi's Path</h2>
+                <p class="dest-p">Follow the trail of Tamil literature's immortal heroine through ancient port cities and sacred river towns.</p>
+                <a href="journey.html" class="explore-btn">Enter Location</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEST 3: By Boat -->
+    <div class="scene" style="transform:translateZ(-11500px);">
+        <div class="travel-badge"><span class="icon">⛵</span> Travelling by Ancient Boat</div>
+        <div class="frame"><img src="images/galleryc1.jpeg" alt="Chola">
+            <div class="text-content">
+                <span class="tag">Destination 03</span>
+                <h2>Chola Chronicles</h2>
+                <p class="dest-p">Step into the world of the greatest empire of medieval South India — power, devotion and beauty.</p>
+                <a href="journey.html" class="explore-btn">Enter Location</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEST 4: By Chariot -->
+    <div class="scene" style="transform:translateZ(-15000px);">
+        <div class="travel-badge"><span class="icon">🏇</span> Travelling by Royal Chariot</div>
+        <div class="frame"><img src="images/gallerys6.jpeg" alt="Hoysala">
+            <div class="text-content">
+                <span class="tag">Destination 04</span>
+                <h2>Stone Poets of Hoysala</h2>
+                <p class="dest-p">Marvel at the most intricate stone carvings ever produced by human hands. Temples that are poetry in stone.</p>
+                <a href="journey.html" class="explore-btn">Enter Location</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEST 5: By Train -->
+    <div class="scene" style="transform:translateZ(-18500px);">
+        <div class="travel-badge"><span class="icon">🚂</span> Travelling by Heritage Train</div>
+        <div class="frame"><img src="images/gallerycc4.jpeg" alt="Chalukyas">
+            <div class="text-content">
+                <span class="tag">Destination 05</span>
+                <h2>Charm of Chalukyas</h2>
+                <p class="dest-p">Witness the birth of Deccan temple architecture — rock-cut shrines that laid the foundation for all that followed.</p>
+                <a href="journey.html" class="explore-btn">Enter Location</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- END -->
+    <div class="scene" style="transform:translateZ(-22000px);">
+        <div class="end-screen">
+            <span class="tag">Your Journey Awaits</span>
+            <h1>Begin Your Story</h1>
+            <a href="journey.html" class="explore-btn" style="margin-top:18px;">Explore All Journeys</a>
+        </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="backend/backend.js"></script>
+<script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Lock scroll until gate opens
+    document.documentElement.classList.add('locked');
+
+    // ═══ GATE PARTICLES ═══
+    const gp = document.getElementById('gate-particles');
+    for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const sz = Math.random() * 3 + 1;
+        p.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}vw;animation-duration:${Math.random()*10+8}s;animation-delay:-${Math.random()*10}s;`;
+        gp.appendChild(p);
+    }
+
+    // ═══ TOUCH TO ENTER — GATE OPEN ═══
+    let gateOpen = false;
+    // AUTO OPEN GATE on page load
+    setTimeout(function() {
+        if (gateOpen) return;
+        gateOpen = true;
+
+        const overlay = document.getElementById('gate-overlay');
+        const tl = gsap.timeline();
+
+        // Fade prompt
+        tl.to('#gateText', { opacity: 0, y: -30, duration: 0.3, ease: 'power2.in' });
+
+        // Glow intensifies
+        tl.to('#gateLight', { opacity: 1, duration: 0.4, ease: 'power2.out' }, '-=0.3');
+        tl.to('#gateSeam', { width: '12px', boxShadow: '0 0 80px rgba(255,220,50,1), 0 0 200px rgba(212,168,64,0.6)', duration: 0.3 }, '-=0.6');
+
+        // Doors swing open smoothly
+        tl.to('#doorL', { rotateY: -115, duration: 1.4, ease: 'power2.inOut' }, '-=0.2');
+        tl.to('#doorR', { rotateY: 115, duration: 1.4, ease: 'power2.inOut' }, '<');
+
+        // Light flood and overlay fade
+        tl.to('#gateLight', { opacity: 0, scale: 4, duration: 0.6, ease: 'power2.in' }, '-=1.2');
+        tl.to(overlay, { opacity: 0, duration: 0.5, ease: 'power2.out', onComplete: () => {
+            overlay.style.display = 'none';
+            document.documentElement.classList.remove('locked');
+            document.getElementById('mainNav').classList.add('show');
+        }}, '-=0.6');
+
+        // Hero text stagger entrance
+        tl.from('.hero-text img.logo', { y: -40, opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.4');
+        tl.from('.hero-tag', { y: 20, opacity: 0, duration: 0.4, ease: 'power3.out' }, '-=0.3');
+        tl.from('.hero-text h1', { y: 30, opacity: 0, duration: 0.5, ease: 'power3.out' }, '-=0.3');
+        tl.from('.hero-text p', { y: 20, opacity: 0, duration: 0.4, ease: 'power3.out' }, '-=0.3');
+        tl.from('.gold-divider', { scaleX: 0, opacity: 0, duration: 0.4, ease: 'power3.out' }, '-=0.2');
+        tl.from('.hero-cta', { y: 20, opacity: 0, duration: 0.4, ease: 'power3.out' }, '-=0.2');
+        // Start cinematic auto-fly after gate opens
+        tl.add(() => {
+            // Cinematic camera flight through the entire tunnel
+            gsap.to('#camera', {
+                z: 23000,
+                duration: 20, // 20 seconds fast cinematic journey
+                ease: 'power1.inOut',
+                delay: 0.8, onComplete: () => { window.location.href = 'journey.html'; }
+            });
+        });
+    });
+
+    // ═══ AUTO CINEMATIC CAMERA FLIGHT ═══
+    // No scrolling needed — camera flies automatically like a video
+    document.body.style.height = '100vh';
+    document.body.style.overflow = 'hidden';
+
+    // ═══ BUILD CONTINUOUS TIME TUNNEL ═══
+    const tz = document.getElementById('tunnelZone');
+
+    // 50 rings spread along ENTIRE tunnel depth
+    for (let i = 0; i < 50; i++) {
+        const ring = document.createElement('div');
+        ring.className = 'time-ring';
+        const size = 1100 + Math.random() * 500;
+        Object.assign(ring.style, {
+            width: size + 'px', height: size + 'px',
+            marginLeft: (-size/2) + 'px', marginTop: (-size/2) + 'px',
+            transform: `translateZ(${-(i * 450)}px)`,
+            opacity: Math.max(0.1, 0.6 - i * 0.01)
+        });
+        tz.appendChild(ring);
+    }
+
+    // 180 warp streaks fill the entire tunnel
+    for (let i = 0; i < 180; i++) {
+        const s = document.createElement('div');
+        s.className = 'warp-streak';
+        const angle = Math.random() * Math.PI * 2;
+        const r = Math.random() * 550 + 80;
+        const x = Math.cos(angle) * r;
+        const y = Math.sin(angle) * r;
+        const len = Math.random() * 500 + 150;
+        Object.assign(s.style, {
+            height: len + 'px', opacity: '0',
+            transform: `translate3d(${x}px, ${y}px, -22000px) rotateX(90deg)`,
+            transformOrigin: 'top center'
+        });
+        tz.appendChild(s);
+        s.animate([
+            { transform: `translate3d(${x}px, ${y}px, -22000px) rotateX(90deg)`, opacity: 0 },
+            { opacity: 0.65, offset: 0.5 },
+            { transform: `translate3d(${x}px, ${y}px, 2000px) rotateX(90deg)`, opacity: 0 }
+        ], { duration: (Math.random()*3+2)*1000, iterations: Infinity, delay: Math.random()*-5000, easing: 'linear' });
+    }
+
+    // Temple artifacts flying through
+    const arts = ['🛕','📜','🕯️','🕉️','🔔','🏵️','🪔','⚱️'];
+    for (let i = 0; i < 25; i++) {
+        const a = document.createElement('div');
+        const angle = Math.random() * Math.PI * 2;
+        const r = Math.random() * 450 + 120;
+        const x = Math.cos(angle) * r;
+        const y = Math.sin(angle) * r;
+        Object.assign(a.style, {
+            position: 'absolute', top: '50%', left: '50%',
+            fontSize: (Math.random()*30+22) + 'px',
+            filter: 'drop-shadow(0 0 10px rgba(212,168,64,0.5))',
+            opacity: '0'
+        });
+        a.innerText = arts[Math.floor(Math.random()*arts.length)];
+        tz.appendChild(a);
+        a.animate([
+            { transform: `translate3d(${x}px, ${y}px, -22000px) rotate(0deg)`, opacity: 0 },
+            { opacity: 0.6, offset: 0.5 },
+            { transform: `translate3d(${x}px, ${y}px, 2000px) rotate(${Math.random()*360}deg)`, opacity: 0 }
+        ], { duration: (Math.random()*8+5)*1000, iterations: Infinity, delay: Math.random()*-8000, easing: 'linear' });
+    }
+
+    // ═══ HERO PARTICLES ═══
+    const hp = document.getElementById('hero-particles');
+    for (let i = 0; i < 40; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const sz = Math.random() * 3 + 1;
+        p.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}vw;animation-duration:${Math.random()*10+8}s;animation-delay:-${Math.random()*12}s;`;
+        hp.appendChild(p);
+    }
+</script>
+</body>
+</html>
+
+
+
+
+
